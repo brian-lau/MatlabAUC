@@ -1,7 +1,7 @@
 MatlabAUC
 =========
 
-This download provides a few Matlab functions for plotting ROC curves, estimating the area under the ROC curve (AUC), and various methods for estimating parametric and non-parametric confidence intervals for the AUC estimates. Also included is code for a simple bootstrap test for the estimated area under the ROC against a known value. The available CI estimation methods are:
+Matlab functions for estimating receiver operating curves (ROC) and the area under the ROC curve (AUC), and various methods for estimating parametric and non-parametric confidence intervals for the AUC estimates. Also included is code for a simple bootstrap test for the estimated area under the ROC against a known value. The available CI estimation methods are:
 * Hanley-McNeil, parametric [1]
 * Mann-Whitney, non-parametric [2]
 * Maximum variance, non-parametric [3]
