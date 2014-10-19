@@ -10,9 +10,9 @@ This download provides a few Matlab functions for plotting ROC curves, estimatin
 
 You can pass arguments through for different bootstrapping options, otherwise the default is a simple percentile bootstrap. This software depends on several functions from the Matlab Statistics toolbox, namely norminv, tiedrank and bootci.
 
-[1] Hanley, JA, McNeil, BJ (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143:29-36
-[2] Qin, G, Hotilovac, L (2008). Comparison of non-parametric confidence intervals for the area under the ROC curve of a continuous-scale diagnostic test. Stat Meth Med Res, 17:207-21
-[3] Cortex, C, Mohri, M (2004). Confidence intervals for the area under the ROC curve. NIPS Conference Proceedings
+1.  Hanley, JA, McNeil, BJ (1982). The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology, 143:29-36
+2.  Qin, G, Hotilovac, L (2008). Comparison of non-parametric confidence intervals for the area under the ROC curve of a continuous-scale diagnostic test. Stat Meth Med Res, 17:207-21
+3.  Cortex, C, Mohri, M (2004). Confidence intervals for the area under the ROC curve. NIPS Conference Proceedings
 
 Instructions and example:
 Install the functions under your Matlab path and have a look at `Testing/demo.m`. If you're impatient, the following will get you started right away:
@@ -24,7 +24,10 @@ Install the functions under your Matlab path and have a look at `Testing/demo.m`
 ```
 
 The following figure shows the results of some monte-carlo simulations I ran to explore the different confidence interval estimators. Each set of colored data represents 1000 simulations for a different confidence interval estimator (simulation details follow the figure). The bootstrap and logit methods appear to have the best coverage for more extreme AUC values, tending to widen a bit closer to 0.5.
+
 <img src="http://www.subcortex.net/research/code/area_under_roc_curve/auc-confidence-interval-comparison.png" alt="Drawing" style="width: 700px;" />
+
+The simulations for each estimator are sorted according to the estimated AUC values (solid points), and plotted along with their 95% confidence intervals (thin colored lines). The x's indicate those data where the confidence interval did not cover the true AUC value (black line). Simulations were performed using a binormal model, with a sample size of 50 each for the signal and noise distributions. The noise samples were drawn from a standard normal distribution (mean=0, var=1), while the signal samples were drawn from a normal distribution with mean=0.75 (var=0.75; top row) or a normal distribution with mean=1.75 (var=1.75; bottom row). Bootstrap CIs were estimated using 500 resamples.
 
 ## Contributions
 Copyright (c) 2014 Brian Lau [brian.lau@upmc.fr](mailto:brian.lau@upmc.fr), see [LICENSE](https://github.com/brian-lau/MatlabAUC/blob/master/LICENSE)
