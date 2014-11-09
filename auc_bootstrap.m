@@ -38,7 +38,7 @@
 %     REVISION HISTORY:
 %     brian 03.08.08 written
 
-function p = auc_bootstrap(data,nboot,flag,H0);
+function p = auc_bootstrap(data,nboot,flag,H0)
 
 if size(data,2) ~= 2
    error('Incorrect input size in AUC_BOOTSTRAP!');
@@ -65,6 +65,7 @@ elseif isempty(nboot)
 end
 
 N = size(data,1);
+A_boot = zeros(nboot,1);
 for i = 1:nboot
    ind = unidrnd(N,[N 1]);
    A_boot(i) = auc(data(ind,:));

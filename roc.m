@@ -42,7 +42,7 @@
 %     brian 03.08.08 written based on http://theoval.sys.uea.ac.uk/matlab/roc/roc.m
 %                    with the added ability to handle ties
 
-function [tp,fp] = roc(data);
+function [tp,fp] = roc(data)
 
 if size(data,2) ~= 2
    error('Incorrect input size in ROC!');

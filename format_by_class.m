@@ -27,7 +27,7 @@
 %     REVISION HISTORY:
 %     brian 03.08.08 written
 
-function data = format_by_class(dp,dn);
+function data = format_by_class(dp,dn)
 
 dp = dp(:);
 dn = dn(:);

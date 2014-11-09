@@ -56,7 +56,7 @@
 %     brian 03.08.08 written
 %     brian 08.07.11 added 'mann-whitney' and 'logit' CI estimators
 
-function [A,Aci] = auc(data,alpha,flag,nboot,varargin);
+function [A,Aci] = auc(data,alpha,flag,nboot,varargin)
 
 if size(data,2) ~= 2
    error('Incorrect input size in AUC!');
@@ -82,11 +82,11 @@ elseif isempty(alpha)
    alpha = 0.05;
 end
 
-if (nargin>3) & (nargout==1)
+if (nargin>3) && (nargout==1)
    warning('Confidence intervals will be computed, but not output in AUC!');
 end
 
-if (nargin>4) & (strcmp(flag,'hanley')|strcmp(flag,'maxvar'))
+if (nargin>4) && (strcmp(flag,'hanley')||strcmp(flag,'maxvar'))
    warning('Asymptotic intervals requested in AUC, extra inputs ignored.');
 end
 
@@ -107,85 +107,87 @@ A = sum((fp(2:end) - fp(1:end-1)).*(tp(2:end) + tp(1:end-1)))/2;
 
 % Confidence intervals
 if nargout == 2
-   if strcmp(flag,'hanley') % See Hanley & McNeil, 1982; Cortex & Mohri, 2004
-      Q1 = A / (2-A);
-      Q2 = (2*A^2) / (1+A);
-
-      Avar = A*(1-A) + (m-1)*(Q1-A^2) + (n-1)*(Q2-A^2);
-      Avar = Avar / (m*n);
-
-      Ase = sqrt(Avar);
-      z = norminv(1-alpha/2);
-      Aci = [A-z*Ase A+z*Ase];
-   elseif strcmp(flag,'maxvar') % Maximum variance
-      Avar = (A*(1-A)) / min(m,n);
-
-      Ase = sqrt(Avar);
-      z = norminv(1-alpha/2);
-      Aci = [A-z*Ase A+z*Ase];
-   elseif strcmp(flag,'mann-whitney')
-      % Reverse labels to keep notation like Qin & Hotilovac
-      m = sum(data(:,1)<=0);
-      n = sum(data(:,1)>0);
-      X = data(data(:,1)<=0,2);
-      Y = data(data(:,1)>0,2);
-      temp = [sort(X);sort(Y)];
-      temp = tiedrank(temp);
-
-      R = temp(1:m);
-      S = temp(m+1:end);
-      Rbar = mean(R);
-      Sbar = mean(S);
-      S102 = (1/((m-1)*n^2)) * (sum((R-(1:m)').^2) - m*(Rbar - (m+1)/2)^2);
-      S012 = (1/((n-1)*m^2)) * (sum((S-(1:n)').^2) - n*(Sbar - (n+1)/2)^2);
-      S2 = (m*S012 + n*S102) / (m+n);
-      
-      Avar = ((m+n)*S2) / (m*n);
-      Ase = sqrt(Avar);
-      z = norminv(1-alpha/2);
-      Aci = [A-z*Ase A+z*Ase];      
-   elseif strcmp(flag,'logit')
-      % Reverse labels to keep notation like Qin & Hotilovac
-      m = sum(data(:,1)<=0);
-      n = sum(data(:,1)>0);
-      X = data(data(:,1)<=0,2);
-      Y = data(data(:,1)>0,2);
-      temp = [sort(X);sort(Y)];
-      temp = tiedrank(temp);
-
-      R = temp(1:m);
-      S = temp(m+1:end);
-      Rbar = mean(R);
-      Sbar = mean(S);
-      S102 = (1/((m-1)*n^2)) * (sum((R-(1:m)').^2) - m*(Rbar - (m+1)/2)^2);
-      S012 = (1/((n-1)*m^2)) * (sum((S-(1:n)').^2) - n*(Sbar - (n+1)/2)^2);
-      S2 = (m*S012 + n*S102) / (m+n);
-      
-      Avar = ((m+n)*S2) / (m*n);
-      Ase = sqrt(Avar);
-      logitA = log(A/(1-A));
-      z = norminv(1-alpha/2);
-      LL = logitA - z*(Ase)/(A*(1-A));
-      UL = logitA + z*(Ase)/(A*(1-A));
-      
-      Aci = [exp(LL)/(1+exp(LL)) exp(UL)/(1+exp(UL))];      
-   elseif strcmp(flag,'boot') % Bootstrap
-      if exist('bootci') ~= 2
-         warning('BOOTCI function not available, resorting to simple percentile bootstrap in AUC.')
-         N = m + n;
-         for i = 1:nboot
-            ind = unidrnd(N,[N 1]);
-            A_boot(i) = auc(data(ind,:));
-         end
-         Aci = prctile(A_boot,100*[alpha/2 1-alpha/2]);
-      else
-         if exist('varargin','var')
-            Aci = bootci(nboot,{@auc,data},varargin{:})';
+   switch lower(flag)
+      case 'hanley' % See Hanley & McNeil, 1982; Cortex & Mohri, 2004
+         Q1 = A / (2-A);
+         Q2 = (2*A^2) / (1+A);
+         
+         Avar = A*(1-A) + (m-1)*(Q1-A^2) + (n-1)*(Q2-A^2);
+         Avar = Avar / (m*n);
+         
+         Ase = sqrt(Avar);
+         z = norminv(1-alpha/2);
+         Aci = [A-z*Ase A+z*Ase];
+      case 'maxvar' % Maximum variance
+         Avar = (A*(1-A)) / min(m,n);
+         
+         Ase = sqrt(Avar);
+         z = norminv(1-alpha/2);
+         Aci = [A-z*Ase A+z*Ase];
+      case 'mann-whitney'
+         % Reverse labels to keep notation like Qin & Hotilovac
+         m = sum(data(:,1)<=0);
+         n = sum(data(:,1)>0);
+         X = data(data(:,1)<=0,2);
+         Y = data(data(:,1)>0,2);
+         temp = [sort(X);sort(Y)];
+         temp = tiedrank(temp);
+         
+         R = temp(1:m);
+         S = temp(m+1:end);
+         Rbar = mean(R);
+         Sbar = mean(S);
+         S102 = (1/((m-1)*n^2)) * (sum((R-(1:m)').^2) - m*(Rbar - (m+1)/2)^2);
+         S012 = (1/((n-1)*m^2)) * (sum((S-(1:n)').^2) - n*(Sbar - (n+1)/2)^2);
+         S2 = (m*S012 + n*S102) / (m+n);
+         
+         Avar = ((m+n)*S2) / (m*n);
+         Ase = sqrt(Avar);
+         z = norminv(1-alpha/2);
+         Aci = [A-z*Ase A+z*Ase];
+      case 'logit'
+         % Reverse labels to keep notation like Qin & Hotilovac
+         m = sum(data(:,1)<=0);
+         n = sum(data(:,1)>0);
+         X = data(data(:,1)<=0,2);
+         Y = data(data(:,1)>0,2);
+         temp = [sort(X);sort(Y)];
+         temp = tiedrank(temp);
+         
+         R = temp(1:m);
+         S = temp(m+1:end);
+         Rbar = mean(R);
+         Sbar = mean(S);
+         S102 = (1/((m-1)*n^2)) * (sum((R-(1:m)').^2) - m*(Rbar - (m+1)/2)^2);
+         S012 = (1/((n-1)*m^2)) * (sum((S-(1:n)').^2) - n*(Sbar - (n+1)/2)^2);
+         S2 = (m*S012 + n*S102) / (m+n);
+         
+         Avar = ((m+n)*S2) / (m*n);
+         Ase = sqrt(Avar);
+         logitA = log(A/(1-A));
+         z = norminv(1-alpha/2);
+         LL = logitA - z*(Ase)/(A*(1-A));
+         UL = logitA + z*(Ase)/(A*(1-A));
+         
+         Aci = [exp(LL)/(1+exp(LL)) exp(UL)/(1+exp(UL))];
+      case 'boot' % Bootstrap
+         if exist('bootci') ~= 2
+            warning('BOOTCI function not available, resorting to simple percentile bootstrap in AUC.')
+            N = m + n;
+            A_boot = zeros(nboot,1);
+            for i = 1:nboot
+               ind = unidrnd(N,[N 1]);
+               A_boot(i) = auc(data(ind,:));
+            end
+            Aci = prctile(A_boot,100*[alpha/2 1-alpha/2]);
          else
-            Aci = bootci(nboot,{@auc,data},'type','per')';
+            if exist('varargin','var')
+               Aci = bootci(nboot,{@auc,data},varargin{:})';
+            else
+               Aci = bootci(nboot,{@auc,data},'type','per')';
+            end
          end
-      end
-   else
-      error('Bad FLAG for AUC!')
+      otherwise
+         error('Bad FLAG for AUC!')
    end
 end

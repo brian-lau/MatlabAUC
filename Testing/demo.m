@@ -1,6 +1,8 @@
 %----- Example from table 1 of Hanley & McNeil (1982)
-y = [1*ones(33,1);1*ones(3,1) ; 2*ones(6,1);2*ones(2,1) ; 3*ones(6,1);3*ones(2,1) ; 4*ones(11,1);4*ones(11,1) ; 5*ones(2,1);5*ones(33,1)];
-t = [zeros(33,1);ones(3,1) ; zeros(6,1);ones(2,1) ; zeros(6,1);ones(2,1) ; zeros(11,1);ones(11,1) ; zeros(2,1);ones(33,1)];
+y = [1*ones(33,1);1*ones(3,1) ; 2*ones(6,1);2*ones(2,1) ; ...
+   3*ones(6,1);3*ones(2,1) ; 4*ones(11,1);4*ones(11,1) ; 5*ones(2,1);5*ones(33,1)];
+t = [zeros(33,1);ones(3,1) ; zeros(6,1);ones(2,1) ; ...
+   zeros(6,1);ones(2,1) ; zeros(11,1);ones(11,1) ; zeros(2,1);ones(33,1)];
 
 [tp,fp] = roc([t,y]);
 
@@ -16,7 +18,8 @@ ylabel('Hit rate');
 p = auc_bootstrap([t,y])
 
 %----- Classic binormal example
-% You may be more used to formatting the data as two vectors representing the scores for each class
+% You may be more used to formatting the data as two vectors representing 
+% the scores for each class
 dp = randn(50,1) + 1;
 dn = randn(50,1);
 
@@ -35,7 +38,8 @@ plot(fp,tp); axis square
 xlabel('False alarm rate');
 ylabel('Hit rate');
 
-% Calling with 2 outputs without further inputs will generate bootstrapped confidence intervals (95%)
+% Calling with 2 outputs without further inputs will generate bootstrapped 
+% confidence intervals (95%)
 % These default to simple percentile CIs
 [A,Aci] = auc(format_by_class(dp,dn))
 % You can also get parametric confidence intervals
@@ -58,7 +62,7 @@ p = auc_bootstrap(format_by_class(dp,dn),2000,'both',0.5)
 %----- Some Monte carlo simulations to get a feel for the estimators
 alpha = 0.05;
 nboot = 500;
-nsamp = 20;
+nsamp = 50;
 len = 50;
 
 tic;
@@ -68,10 +72,10 @@ for i = 1:nsamp
    y = [sigma*randn(len,1)+mu ; randn(len,1)];
    t = [ones(len,1) ; zeros(len,1)];
    [A(i),Aci1(i,:)] = auc([t,y],alpha,'hanley');
-   [junk,Aci2(i,:)] = auc([t,y],alpha,'mann-whitney');
-   [junk,Aci3(i,:)] = auc([t,y],alpha,'maxvar');
-   [junk,Aci4(i,:)] = auc([t,y],alpha,'logit');
-   [junk,Aci5(i,:)] = auc([t,y],alpha,'boot',nboot,'type','bca');
+   [~,Aci2(i,:)] = auc([t,y],alpha,'mann-whitney');
+   [~,Aci3(i,:)] = auc([t,y],alpha,'maxvar');
+   [~,Aci4(i,:)] = auc([t,y],alpha,'logit');
+   [~,Aci5(i,:)] = auc([t,y],alpha,'boot',nboot,'type','bca');
 end
 toc
 trueA = normcdf(mu/sqrt(1+sigma^2));
