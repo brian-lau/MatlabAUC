@@ -40,7 +40,8 @@
 %
 %     REVISION HISTORY:
 %     brian 03.08.08 written based on http://theoval.sys.uea.ac.uk/matlab/roc/roc.m
-%                    with the added ability to handle ties
+%                    Copyright G.C. Cawley under GPLv2
+%                    with the ability to handle ties
 
 function [tp,fp] = roc(data)
 
