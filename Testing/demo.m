@@ -48,6 +48,8 @@ ylabel('Hit rate');
 [A,Aci] = auc(format_by_class(dp,dn),0.05,'logit')
 [A,Aci] = auc(format_by_class(dp,dn),0.05,'mann-whitney')
 [A,Aci] = auc(format_by_class(dp,dn),0.05,'maxvar')
+[A,Aci] = auc(format_by_class(dp,dn),0.05,'wald')
+[A,Aci] = auc(format_by_class(dp,dn),0.05,'wald-cc')
 % If you have the Statistics toolbox, you can pass additional arguments for fancier CIs
 [A,Aci] = auc(format_by_class(dp,dn),0.05,'boot',1000,'type','bca')
 
@@ -66,8 +68,8 @@ nsamp = 50;
 len = 50;
 
 tic;
-mu = .75;
-sigma = sqrt(mu);
+mu = norminv(.9)*sqrt(2);
+sigma = 1;%sqrt(mu);
 for i = 1:nsamp
    y = [sigma*randn(len,1)+mu ; randn(len,1)];
    t = [ones(len,1) ; zeros(len,1)];
@@ -76,14 +78,16 @@ for i = 1:nsamp
    [~,Aci3(i,:)] = auc([t,y],alpha,'maxvar');
    [~,Aci4(i,:)] = auc([t,y],alpha,'logit');
    [~,Aci5(i,:)] = auc([t,y],alpha,'boot',nboot,'type','bca');
+   [~,Aci6(i,:)] = auc([t,y],alpha,'wald');
+   [~,Aci7(i,:)] = auc([t,y],alpha,'wald-cc');
 end
 toc
 trueA = normcdf(mu/sqrt(1+sigma^2));
 
 % Plot
-Aci = {Aci1 Aci2 Aci3 Aci4 Aci5};
+Aci = {Aci1 Aci2 Aci3 Aci4 Aci5 Aci6 Aci7};
 figure;
-for i = 1:5
+for i = 1:numel(Aci)
    ind = (i-1)*nsamp + (1:nsamp) + (i-1)*100;
    
    subplot(211); hold on
